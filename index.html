@@ -169,7 +169,7 @@ details.how summary{cursor:pointer;font-weight:900}
 .vol{display:grid;grid-template-columns:auto 1fr 2.4em;gap:8px;align-items:center;font-size:13px;font-weight:900;color:var(--olive)}
 .vol input{width:100%;accent-color:var(--olive);min-width:0}
 .vol output{font-family:var(--f-num);font-weight:400;text-align:right;font-variant-numeric:tabular-nums}
-@media (max-width:700px){.screen.side{place-items:end center}.card{padding:14px}.menu-grid{grid-template-columns:repeat(3,1fr)}.zonebar{width:150px}.arrow{width:60px;height:60px;font-size:32px}}
+@media (max-width:700px){#shopScreen{background:linear-gradient(180deg,rgba(30,34,56,0) 40%,rgba(30,34,56,.5))}#shopScreen .card{transform:none;padding:12px;gap:8px;overflow:visible}#skinList{max-height:25vh;overflow-y:auto;overscroll-behavior:contain;padding-right:2px}#skinList .pick small{display:none}#skinList .pick{padding:5px 8px}#shopScreen .shopFoot .sub{display:none}#shopScreen .shopFoot{justify-content:flex-end}#shopScreen .shopFoot .go{font-size:17px;padding:7px 18px}#shopScreen .h2{font-size:22px}#shopScreen .savebox{font-size:12px}.screen.side{place-items:end center}.card{padding:14px}.menu-grid{grid-template-columns:repeat(3,1fr)}.zonebar{width:150px}.arrow{width:60px;height:60px;font-size:32px}}
 @media (prefers-reduced-motion:reduce){.warn,.pw.ending,.arrow,.loading .egg{animation:none}.bigtoast.show{animation-duration:.01s;opacity:1}}
 </style>
 </head>
@@ -247,7 +247,7 @@ details.how summary{cursor:pointer;font-weight:900}
       <div class="row"><input id="loadCode" placeholder="貼上存檔碼" aria-label="貼上存檔碼"><button class="tg" id="loadBtn">讀取</button></div>
       <p class="note" id="saveMsg"></p>
     </details>
-    <div class="row"><span class="sub">點造型可以先預覽</span><button class="go backBtn">返回</button></div>
+    <div class="row shopFoot"><span class="sub">點造型可以先預覽</span><button class="go backBtn">返回</button></div>
   </div>
 </div>
 
@@ -1657,7 +1657,8 @@ function updateCamera(dt,pos){
   const yaw=S.camYaw, cy=Math.cos(yaw), sy=Math.sin(yaw);
   const L=(x,y,z,out)=>out.set(pos.x+x*cy+z*sy, pos.y+y, pos.z-x*sy+z*cy);
   let cp,cl;
-  if(S.state==='title'||S.state==='loading'){ const wide=camera.aspect>1.15; cp=L(wide?-1.9:-1.0,wide?1.35:1.7,wide?-3.9:-5.4,_w2.clone()); cl=L(wide?-1.25:0.2,wide?0.95:0.15,1.2,new V3()); }
+  if(S.state==='title'&&S.view==='shop'&&camera.aspect<=1.15){ cp=L(0.3,1.9,-5.8,_w2.clone()); cl=L(0,-1.15,0,new V3()); } // 手機：奶蛙放在畫面上半部，下半部給商店
+  else if(S.state==='title'||S.state==='loading'){ const wide=camera.aspect>1.15; cp=L(wide?-1.9:-1.0,wide?1.35:1.7,wide?-3.9:-5.4,_w2.clone()); cl=L(wide?-1.25:0.2,wide?0.95:0.15,1.2,new V3()); }
   else if(S.state==='dying'||S.state==='over'){ if(S.deadReason==='fall'){ cp=L(0,4.5,4.5,_w2.clone()); cp.y=Math.max(cp.y,gyOf(S.piece,S.s)+4); cl=pos.clone(); } else { cp=L(-3.8,2.2,-3.2,_w2.clone()); cl=L(0,0.9,0.6,new V3()); } }
   else if(S.mode==='zip'){ cp=L(0,3.4,6.6,_w2.clone()); cl=L(0,-0.6,-9,new V3()); }
   else { cp=L(0,4.3,5.4,_w2.clone()); cl=L(0,0.7,-7,new V3()); cp.y-=S.y*0.45; cl.y-=S.y*0.6; }
@@ -1748,7 +1749,7 @@ function endRun(){
    選單：造型 / 升級 / 成就
    ========================================================= */
 function refreshWallet(){ $('walletEggs').textContent=save.eggs; $('walletGems').textContent=save.gems; $('bestStart').textContent=save.st.best; $$('.wEggs').forEach(e=>e.textContent=save.eggs); $$('.wGems').forEach(e=>e.textContent=save.gems); }
-function backToMenu(){ if(AV.skin!==save.skin) applySkin(save.skin); show('menuScreen'); refreshWallet(); }
+function backToMenu(){ S.view=null; if(AV.skin!==save.skin) applySkin(save.skin); show('menuScreen'); refreshWallet(); }
 let shopTab='n', previewing=null;
 function renderShop(){
   const list=$('skinList'); list.innerHTML=''; $('tabN').setAttribute('aria-selected',shopTab==='n'); $('tabL').setAttribute('aria-selected',shopTab==='l');
@@ -1781,7 +1782,7 @@ function renderAch(){ const list=$('achList'); list.innerHTML=''; let done=0,tot
 
 /* ---------- 按鈕 ---------- */
 $('startBtn').addEventListener('click',startRun); $('againBtn').addEventListener('click',startRun); $('menuBtn').addEventListener('click',toTitle);
-$('shopBtn').addEventListener('click',()=>{ previewing=save.skin; shopTab=SKINS[save.skin].legend?'l':'n'; renderShop(); show('shopScreen'); });
+$('shopBtn').addEventListener('click',()=>{ S.view='shop'; previewing=save.skin; shopTab=SKINS[save.skin].legend?'l':'n'; renderShop(); show('shopScreen'); });
 $('upBtn').addEventListener('click',()=>{ renderUp(); show('upScreen'); }); $('achBtn').addEventListener('click',()=>{ renderAch(); show('achScreen'); });
 $$('.backBtn').forEach(b=>b.addEventListener('click',backToMenu));
 $('tabN').addEventListener('click',()=>{ shopTab='n'; renderShop(); }); $('tabL').addEventListener('click',()=>{ shopTab='l'; renderShop(); });
