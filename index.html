@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="3D 跑酷小遊戲：奶蛙騎腳踏車在田埂上逃命，吃奶蛋、撿道具，別被牛來抓到。">
+<meta name="description" content="3D 跑酷小遊戲：奶蛙騎腳踏車在田埂上逃命，吃奶蛋、撿道具、換造型，別被牛來抓到。">
 <title>奶蛙騎腳踏車</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700;900&family=Lilita+One&display=swap">
@@ -89,7 +89,34 @@ h1{margin:0;font-weight:900;font-size:clamp(36px,9vw,52px);line-height:1.02;colo
 .big b{font-family:var(--f-num);font-weight:400;font-size:34px;color:var(--olive);font-variant-numeric:tabular-nums}
 .new{background:var(--danger);color:var(--cream);font-weight:900;font-size:13px;padding:3px 10px;border-radius:999px;align-self:flex-start}
 .c-rocket{background:#E2483B}.c-magnet{background:#B8323A}.c-spring{background:#62C25B}.c-double{background:#F4B92E}.c-shield{background:#3E86D8}
-@media (max-width:700px){#startScreen{place-items:end center}.card{padding:16px}.items{grid-template-columns:1fr}}
+.btn2{appearance:none;border:3px solid var(--olive);background:var(--cream);color:var(--olive);font:900 17px var(--f-display);letter-spacing:.08em;padding:9px 16px;border-radius:12px;box-shadow:0 4px 0 var(--olive);cursor:pointer}
+.btn2:active{transform:translateY(2px);box-shadow:0 2px 0 var(--olive)}
+.btnrow{display:flex;gap:10px;align-items:center}
+.pill.bank{font-size:18px}
+.h2{margin:0;font-weight:900;font-size:28px;color:var(--milk);-webkit-text-stroke:2px var(--olive);paint-order:stroke fill;text-shadow:0 3px 0 var(--olive)}
+.skins{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.skins li{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.skin-pick{appearance:none;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;text-align:left;background:transparent;border:2px solid rgba(59,66,36,.25);border-radius:12px;padding:7px 9px;cursor:pointer;color:var(--olive);font-family:var(--f-display);min-width:0}
+.skin-pick[aria-pressed="true"]{border-color:var(--olive);background:rgba(244,185,46,.18)}
+.skin-pick b{display:block;font-size:15px;font-weight:900}
+.skin-pick small{display:block;font-size:12px;opacity:.8}
+.sw{width:34px;height:40px;border:2px solid var(--olive);border-radius:50% 50% 46% 46%/60% 60% 40% 40%;position:relative;flex:none}
+.sw::after{content:"";position:absolute;left:22%;right:22%;bottom:10%;height:45%;border-radius:50%;background:var(--belly,#ECD29C)}
+.skin-act{appearance:none;border:2px solid var(--olive);border-radius:10px;padding:7px 10px;font:900 13px var(--f-display);cursor:pointer;background:var(--milk);color:var(--olive);min-width:84px;display:inline-flex;gap:5px;align-items:center;justify-content:center}
+.skin-act[disabled]{opacity:.45;cursor:not-allowed}
+.skin-act.on{background:var(--olive);color:var(--cream)}
+.skin-act.own{background:var(--cream)}
+.skin-act .egg{width:13px;height:16px;border-width:1.5px}
+.skin-act .egg::before,.skin-act .egg::after{top:5px;width:4px;height:4px}
+.savebox{border-top:2px dashed rgba(59,66,36,.3);padding-top:8px;color:var(--olive);font-size:13px}
+.savebox summary{cursor:pointer;font-weight:900}
+.savebox .row{margin-top:8px;flex-wrap:nowrap}
+.savebox input{flex:1;min-width:0;border:2px solid var(--olive);border-radius:8px;padding:6px 8px;font:500 12px ui-monospace,Menlo,Consolas,monospace;background:#fff;color:var(--ink);-webkit-user-select:text;user-select:text}
+.note{margin:6px 0 0;font-size:12px;font-weight:700;min-height:1em}
+.gain{margin:0;font-size:15px;font-weight:900;color:var(--olive)}
+.gain b{font-family:var(--f-num);font-weight:400;font-size:20px}
+#shopScreen{place-items:center end}
+@media (max-width:700px){#startScreen,#shopScreen{place-items:end center}.card{padding:16px}.items{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.warn,.pw.ending{animation:none}.toast.show{animation-duration:.01s;opacity:1}}
 </style>
 </head>
@@ -142,8 +169,8 @@ h1{margin:0;font-weight:900;font-size:clamp(36px,9vw,52px);line-height:1.02;colo
       </div>
     </div>
     <div class="row">
-      <div class="best">最高分 <b id="bestStart">0</b></div>
-      <button class="go" id="startBtn">出發</button>
+      <div class="best">最高分 <b id="bestStart">0</b><br>奶蛋存款 <b id="bankStart">0</b></div>
+      <div class="btnrow"><button class="btn2" id="shopBtn">造型</button><button class="go" id="startBtn">出發</button></div>
     </div>
   </div>
 </div>
@@ -171,7 +198,22 @@ h1{margin:0;font-weight:900;font-size:clamp(36px,9vw,52px);line-height:1.02;colo
       <div><span>距離</span><b id="finalDist">0</b></div>
       <div><span>最高分</span><b id="finalBest">0</b></div>
     </div>
-    <div class="row"><span class="sub">Enter 或空白鍵也能重來</span><button class="go" id="againBtn">再騎一次</button></div>
+    <p class="gain" id="bankLine"></p>
+    <div class="row"><button class="btn2" id="menuBtn">回選單</button><button class="go" id="againBtn">再騎一次</button></div>
+  </div>
+</div>
+
+<div class="screen" id="shopScreen" hidden>
+  <div class="card">
+    <div class="row"><h2 class="h2">造型商店</h2><div class="pill bank"><i class="egg" aria-hidden="true"></i><span id="bankShop">0</span></div></div>
+    <ul class="skins" id="skinList"></ul>
+    <details class="savebox">
+      <summary>存檔碼：換電腦或換瀏覽器時用</summary>
+      <div class="row"><input id="saveCode" readonly aria-label="你的存檔碼"><button class="tg" id="copyCode">複製</button></div>
+      <div class="row"><input id="loadCode" placeholder="貼上存檔碼" aria-label="貼上存檔碼"><button class="tg" id="loadBtn">讀取</button></div>
+      <p class="note" id="saveMsg"></p>
+    </details>
+    <div class="row"><span class="sub">點造型可以先預覽</span><button class="go" id="shopBack">返回</button></div>
   </div>
 </div>
 
@@ -188,6 +230,23 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v;}c
 const isTouch=window.matchMedia&&matchMedia('(pointer:coarse)').matches;
 const cfg={music:store.get('naiwa-music','1')==='1', sfx:store.get('naiwa-sfx','1')==='1', hq:store.get('naiwa-hq',isTouch?'0':'1')==='1'};
 let best=parseInt(store.get('naiwa-best','0'),10)||0;
+// 存檔：存在瀏覽器本機（localStorage），可用存檔碼搬家
+const SKINS={
+  classic:{name:'原味奶蛙',price:0,desc:'最初的那隻',body:'#F0A81E',belly:'#ECD29C',frame:'#D8473A'},
+  farmer:{name:'草帽農夫',price:120,desc:'斗笠、紅毛巾、綠色鐵馬',body:'#E9A01A',belly:'#ECD29C',frame:'#2F8A4A'},
+  boba:{name:'黑糖珍奶',price:300,desc:'黑糖漸層，身上黏著珍珠',body:'#C08446',belly:'#EED8B8',frame:'#6B4226',top:'#6E3A16'},
+  gold:{name:'黃金奶蛙',price:800,desc:'純金打造，墨鏡皇冠，騎過留下金光',body:'#E0A812',belly:'#FFE6A0',frame:'#1C1C1C',metal:true}
+};
+const SAVE_KEY='naiwa-save';
+let save={eggs:0,owned:['classic'],skin:'classic'};
+(function(){ try{ const v=JSON.parse(store.get(SAVE_KEY,'null')); if(v&&typeof v.eggs==='number'){ save.eggs=Math.max(0,v.eggs|0); save.owned=Array.isArray(v.owned)?v.owned.filter(k=>SKINS[k]):['classic']; if(!save.owned.includes('classic')) save.owned.unshift('classic'); save.skin=SKINS[v.skin]&&save.owned.includes(v.skin)?v.skin:'classic'; } }catch(e){} })();
+function persist(){ store.set(SAVE_KEY,JSON.stringify(save)); }
+function hashStr(str){ let h=2166136261; for(let i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0).toString(36); }
+function exportCode(){ const j=JSON.stringify({e:save.eggs,o:save.owned,s:save.skin,b:best}); const b=btoa(unescape(encodeURIComponent(j))); return 'NW1.'+b+'.'+hashStr(b); }
+function importCode(code){ const m=/^NW1\.([A-Za-z0-9+/=]+)\.([a-z0-9]+)$/.exec((code||'').trim()); if(!m||hashStr(m[1])!==m[2]) return false;
+  try{ const v=JSON.parse(decodeURIComponent(escape(atob(m[1])))); if(typeof v.e!=='number') return false;
+    save.eggs=Math.max(0,v.e|0); save.owned=(v.o||[]).filter(k=>SKINS[k]); if(!save.owned.includes('classic')) save.owned.unshift('classic');
+    save.skin=save.owned.includes(v.s)?v.s:'classic'; if((v.b|0)>best){ best=v.b|0; store.set('naiwa-best',String(best)); } persist(); return true; }catch(e){ return false; } }
 $('bestStart').textContent=best;
 
 /* =========================================================
@@ -431,13 +490,54 @@ function glowSprite(color,size,opacity){ const s=new THREE.Sprite(new THREE.Spri
 /* =========================================================
    奶蛙 + 腳踏車
    ========================================================= */
-function frogBodyGeo(){
-  const g=lathe([[0,0],[0.28,0.02],[0.48,0.1],[0.61,0.25],[0.67,0.43],[0.67,0.63],[0.62,0.83],[0.54,1.03],[0.47,1.23],[0.42,1.4],[0.38,1.55],[0.33,1.68],[0.25,1.8],[0.14,1.87],[0.04,1.895],[0,1.9]],48);
-  const p=g.attributes.position, c=new Float32Array(p.count*3), Y=col('#F0A81E'), B=col('#ECD29C'), t=new THREE.Color();
+const FROG_PROFILE=[[0,0],[0.28,0.02],[0.48,0.1],[0.61,0.25],[0.67,0.43],[0.67,0.63],[0.62,0.83],[0.54,1.03],[0.47,1.23],[0.42,1.4],[0.38,1.55],[0.33,1.68],[0.25,1.8],[0.14,1.87],[0.04,1.895],[0,1.9]];
+function frogR(y){ for(let i=1;i<FROG_PROFILE.length;i++){ const a=FROG_PROFILE[i-1],b=FROG_PROFILE[i]; if(y<=b[1]) return lerp(a[0],b[0],(y-a[1])/(b[1]-a[1]||1)); } return 0; }
+const skinCache={};
+function skinMats(id){ if(skinCache[id]) return skinCache[id]; const k=SKINS[id];
+  const o=k.metal?{roughness:0.28,metalness:0.75,clearcoat:1,clearcoatRoughness:0.2,envMapIntensity:0.9}:{roughness:0.45};
+  return skinCache[id]={ body:phys('#FFFFFF',Object.assign({vertexColors:true},o)), limb:phys(k.body,o), frame:phys(k.frame,{roughness:0.3,metalness:0.3,clearcoat:0.8}) }; }
+function frogBodyGeo(id){
+  const k=SKINS[id], g=lathe(FROG_PROFILE,48);
+  const p=g.attributes.position, c=new Float32Array(p.count*3), Y=col(k.body), B=col(k.belly), T=k.top?col(k.top):null, t=new THREE.Color();
   for(let i=0;i<p.count;i++){ const x=p.getX(i),y=p.getY(i),z=p.getZ(i);
+    t.copy(Y);
+    if(T){ const ang=Math.atan2(x,z); const f=smooth(0.95,1.75,y+Math.sin(ang*5)*0.09+Math.sin(ang*11)*0.04); t.lerp(T,f*0.9); }
     const e=(x/0.5)**2+((y-0.55)/0.5)**2; const m=(1-smooth(0.78,1.0,e))*smooth(0.05,-0.25,z);
-    t.copy(Y).lerp(B,m); c[i*3]=t.r; c[i*3+1]=t.g; c[i*3+2]=t.b; }
+    t.lerp(B,m); c[i*3]=t.r; c[i*3+1]=t.g; c[i*3+2]=t.b; }
   g.setAttribute('color',new THREE.BufferAttribute(c,3)); g.scale(1,1,0.94); return g;
+}
+function addSkinAccessories(r,id){
+  const acc=new THREE.Group(); r.add(acc); r.userData.hat=acc;
+  if(id==='farmer'){
+    const hat=new THREE.Group(); hat.position.set(0,1.86,0.02); hat.rotation.x=0.08; hat.rotation.z=-0.06; acc.add(hat);
+    const cone=mesh(new THREE.ConeGeometry(0.78,0.36,32,1,true),M.straw); cone.position.y=0.12; cone.material=M.straw; hat.add(cone);
+    const under=mesh(new THREE.ConeGeometry(0.78,0.36,32,1,true),M.straw,false); under.position.y=0.115; under.scale.set(0.98,0.98,0.98); under.material=new THREE.MeshStandardMaterial({map:strawTex,side:THREE.BackSide,roughness:1}); hat.add(under);
+    blob(M.twine,0.36,0.04,0.36,0,0.0,0,hat,G.cyl,false);
+    const towel=mesh(new THREE.TorusGeometry(0.43,0.075,10,32),M.cloth[0]); towel.rotation.x=Math.PI/2; towel.position.set(0,1.18,0.02); towel.scale.set(1,1.02,0.75); r.add(towel);
+    const tail=boxm(M.cloth[0],0.16,0.4,0.05,0.12,0.98,0.42,r); tail.rotation.set(0.25,0,0.15);
+    r.userData.towel=tail;
+  }
+  if(id==='boba'){
+    const pearl=phys('#1E120C',{roughness:0.12,clearcoat:1});
+    let n=0; while(n<16){ const y=rnd(0.95,1.82), a=rnd(0,Math.PI*2); const rr=frogR(y); const x=Math.sin(a)*rr, z=Math.cos(a)*rr*0.94;
+      if(y>1.25 && z<0.02) continue;
+      blob(pearl,0.07,0.07,0.07,x,y,z,r,G.sphereLo); n++; }
+    const straw=new THREE.Group(); straw.position.set(0.06,1.82,0.06); straw.rotation.set(0.25,0,-0.35); acc.add(straw);
+    blob(phys('#E94F7A',{roughness:0.3,clearcoat:1}),0.065,0.75,0.065,0,0.3,0,straw,G.cyl);
+    const lid=mesh(new THREE.TorusGeometry(0.2,0.035,8,24),phys('#F2F2F2',{roughness:0.2,clearcoat:1,transparent:true,opacity:0.85})); lid.rotation.x=Math.PI/2; lid.position.set(0,1.8,0); acc.add(lid);
+  }
+  if(id==='gold'){
+    const crown=new THREE.Group(); crown.position.set(0,1.8,0.02); crown.rotation.z=-0.12; crown.scale.setScalar(1.3); acc.add(crown);
+    const gm=M.gold; blob(gm,0.26,0.12,0.26,0,0.06,0,crown,new THREE.CylinderGeometry(1,1,1,24,1,true),true);
+    for(let i=0;i<6;i++){ const a=i/6*Math.PI*2; const sp=mesh(G.cone,gm); sp.scale.set(0.06,0.16,0.06); sp.position.set(Math.sin(a)*0.25,0.2,Math.cos(a)*0.25); crown.add(sp);
+      blob(M.rocketRed,0.03,0.03,0.03,Math.sin(a)*0.255,0.09,Math.cos(a)*0.255,crown,G.sphereLo,false); }
+    const glassMat=phys('#101014',{roughness:0.05,metalness:0.5,clearcoat:1});
+    for(const sg of [1,-1]){ const l=blob(glassMat,0.13,0.085,0.03,sg*0.2,1.55,-0.31,r,G.sphere,false); l.rotation.y=sg*0.55; }
+    boxm(glassMat,0.14,0.02,0.02,0,1.58,-0.37,r,false);
+    for(const sg of [1,-1]){ const arm=boxm(glassMat,0.02,0.02,0.32,sg*0.33,1.57,-0.12,r,false); arm.rotation.y=-sg*0.35; }
+    const chain=mesh(new THREE.TorusGeometry(0.4,0.025,6,32),gm,false); chain.rotation.x=Math.PI/2+0.35; chain.position.set(0,1.12,-0.05); r.add(chain);
+    blob(gm,0.08,0.1,0.03,0,0.95,-0.48,r,G.sphereLo,false);
+  }
 }
 function eyeball(parent,x,y,z,r,dirx){
   const g=new THREE.Group(); g.position.set(x,y,z); parent.add(g);
@@ -447,9 +547,9 @@ function eyeball(parent,x,y,z,r,dirx){
   blob(M.white,r*0.15,r*0.15,r*0.15,d.x*r*0.8+0.015,d.y*r*0.8+r*0.4,d.z*r*0.8,g,G.sphereLo,false);
   return g;
 }
-function makeRider(){
+function makeRider(id){
   const r=new THREE.Group();
-  r.add(mesh(frogBodyGeo(),M.frog));
+  r.add(mesh(frogBodyGeo(id),skinMats(id).body));
   eyeball(r,0.275,1.52,-0.15,0.13,0.72); eyeball(r,-0.275,1.52,-0.15,0.13,-0.72);
   const beak=mesh(G.cone,M.beak,false); beak.scale.set(0.075,0.13,0.035); beak.rotation.x=-Math.PI/2; beak.position.set(0,1.4,-0.41); r.add(beak);
   for(const s of [1,-1]) blob(M.dark,0.012,0.012,0.008,s*0.05,1.48,-0.4,r,G.sphereLo,false);
@@ -465,6 +565,7 @@ function makeRider(){
   const hs=mesh(new THREE.TorusGeometry(0.22,0.075,10,20,Math.PI),M.magnet); hs.rotation.z=Math.PI; mag.add(hs);
   for(const s of [1,-1]) boxm(M.metal,0.15,0.1,0.15,s*0.22,-0.05,0,mag);
   r.userData.magnet=mag;
+  addSkinAccessories(r,id);
   return r;
 }
 function makeHand(){ const h=new THREE.Group(); blob(M.dark,0.1,0.07,0.11,0,0,0,h);
@@ -487,11 +588,11 @@ function makeEggMesh(scale){
 }
 const EGG_GEO=makeEggMesh();
 function eggMesh(s){ const m=mesh(EGG_GEO,M.egg); m.scale.setScalar(s||1); return m; }
-function makePlayer(){
+function makePlayer(id){ const SM=skinMats(id);
   const root=new THREE.Group(), bike=new THREE.Group(); root.add(bike);
   const V=(x,y,z)=>new THREE.Vector3(x,y,z);
   const R=V(0,0.47,0.74),F=V(0,0.47,-0.74),C=V(0,0.5,-0.04),S=V(0,1.02,0.32),Ht=V(0,1.26,-0.56),Hb=V(0,0.92,-0.62),Bar=V(0,1.5,-0.6);
-  const tube=(a,b,r,mat)=>{ const m=mesh(G.cyl,mat||M.frame); placeLimb(m,a,b,r); bike.add(m); return m; };
+  const tube=(a,b,r,mat)=>{ const m=mesh(G.cyl,mat||SM.frame); placeLimb(m,a,b,r); bike.add(m); return m; };
   tube(C,S,0.04); tube(S,Ht,0.036); tube(C,Hb,0.042);
   for(const s of [1,-1]){ tube(C,R.clone().setX(s*0.06),0.024); tube(S,R.clone().setX(s*0.06),0.021); tube(Hb,F.clone().setX(s*0.06),0.028); }
   tube(Hb,Ht,0.048); tube(Ht,Bar,0.028,M.metal);
@@ -522,12 +623,12 @@ function makePlayer(){
     const fl=mesh(G.cone,M.flame,false); fl.scale.set(0.12,0.6,0.12); fl.rotation.x=Math.PI; fl.position.y=-0.6; g.add(fl); flames.push(fl);
     g.rotation.x=0.45; }
   // rider
-  const rider=makeRider(); rider.scale.setScalar(0.82); const riderBase=V(0,1.04,0.3); rider.position.copy(riderBase); bike.add(rider);
-  const limb=(m)=>{ const x=mesh(G.taper,m||M.frogLimb); bike.add(x); return x; };
-  const joint=r=>{ const m=mesh(G.sphere,M.frogLimb); m.scale.setScalar(r); bike.add(m); return m; };
+  const rider=makeRider(id); rider.scale.setScalar(0.82); const riderBase=V(0,1.04,0.3); rider.position.copy(riderBase); bike.add(rider);
+  const limb=(m)=>{ const x=mesh(G.taper,m||SM.limb); bike.add(x); return x; };
+  const joint=r=>{ const m=mesh(G.sphere,SM.limb); m.scale.setScalar(r); bike.add(m); return m; };
   const legs=[1,-1].map(s=>({s,thigh:limb(),shin:limb(),knee:joint(0.115),hipJ:joint(0.15),foot:(()=>{const f=makeFoot(); bike.add(f); return f;})()}));
   const arms=[1,-1].map(s=>({s,up:limb(),lo:limb(),el:joint(0.08),sh:joint(0.1),hand:(()=>{const h=makeHand(); bike.add(h); return h;})()}));
-  root.userData={bike,rider,riderBase,wheels:[wr,wf],crank,legs,arms,C,Bar,crankA:0,head,lamp,rockets,flames};
+  root.userData={skin:id,bike,rider,riderBase,wheels:[wr,wf],crank,legs,arms,C,Bar,crankA:0,head,lamp,rockets,flames};
   return root;
 }
 const _a=new THREE.Vector3(),_k=new THREE.Vector3(),_m=new THREE.Vector3(),_H=new THREE.Vector3(),_P=new THREE.Vector3(),_K=new THREE.Vector3(),_hand=new THREE.Vector3(),_el=new THREE.Vector3();
@@ -868,8 +969,15 @@ function applyTOD(t){
 /* =========================================================
    ACTORS
    ========================================================= */
-const player=makePlayer(); scene.add(player);
-player.traverse(o=>{ if(o.isMesh && o.material!==M.flame && o.material!==M.springGlow) o.castShadow=true; });
+let player=null;
+function setPlayerSkin(id){
+  if(player&&player.userData.skin===id) return;
+  let crank=0; if(player){ crank=player.userData.crankA; scene.remove(player); }
+  player=makePlayer(id); player.userData.crankA=crank; scene.add(player);
+  player.traverse(o=>{ if(o.isMesh && o.material!==M.flame && o.material!==M.springGlow) o.castShadow=true; });
+  player.position.set(S.x,S.y,S.z);
+  if(typeof TOD!=='undefined') player.userData.head.intensity=TOD.night*3.2;
+}
 const pShadow=new THREE.Mesh(new THREE.CircleGeometry(0.7,24),M.shadowBlob); pShadow.rotation.x=-Math.PI/2; pShadow.scale.set(0.7,1.4,1); scene.add(pShadow);
 const chaser=makeChaser(); scene.add(chaser);
 const LANES=[-2.4,0,2.4];
@@ -901,8 +1009,9 @@ const S={state:'title',z:0,x:0,y:0,vy:0,lane:1,prevLane:1,speed:15,t:0,dist:0,co
   nextRow:-45,nextItem:-120,deadT:0,deadReason:'',lean:0,paused:false,invuln:0,chain:0,lastCoin:0,shake:0,todBase:0.06,
   power:{rocket:0,magnet:0,spring:0,double:0,shield:0}};
 const cam={pos:new THREE.Vector3(3,2.4,-6),look:new THREE.Vector3(0,1.6,2)};
+setPlayerSkin(save.skin);
 const ui={hud:$('hud'),score:$('score'),coins:$('coins'),mult:$('mult'),powers:$('powers'),warn:$('warn'),toast:$('toast'),tod:$('tod'),flash:$('flash'),
-  start:$('startScreen'),over:$('overScreen'),pause:$('pauseScreen')};
+  start:$('startScreen'),over:$('overScreen'),pause:$('pauseScreen'),shop:$('shopScreen')};
 function clearWorld(){ for(const a of [obstacles,coins,items]) for(const o of a) scene.remove(o.mesh); obstacles=[];coins=[];items=[];rowsHist=[]; }
 function resetGame(){
   clearWorld();
@@ -916,6 +1025,8 @@ function endGame(){
   S.state='over'; ui.hud.hidden=true; ui.warn.hidden=true;
   const sc=Math.floor(S.score), isNew=sc>best; if(isNew){ best=sc; store.set('naiwa-best',String(best)); }
   $('finalScore').textContent=sc; $('finalCoins').textContent=S.coins; $('finalDist').textContent=Math.floor(S.dist)+'m'; $('finalBest').textContent=best; $('newBest').hidden=!isNew; $('bestStart').textContent=best;
+  save.eggs+=S.coins; persist(); updateBank();
+  $('bankLine').innerHTML=`這趟帶回 <b>${S.coins}</b> 顆奶蛋，存款 <b>${save.eggs}</b>`;
   $('overTitle').textContent=S.deadReason==='caught'?'被牛來抓到了':'撞上去，牛來趕到';
   ui.over.hidden=false; $('againBtn').focus();
 }
@@ -937,6 +1048,28 @@ function activate(type){
   if(type==='rocket'){ sndWhoosh(); S.duck=0; S.chaseTimer=0;
     const len=S.speed*ITEMS.rocket.dur; let i=0; for(let z=S.z-16; z>S.z-len+10; z-=2.4,i++){ const L=clamp(Math.round(1+Math.sin(i*0.22)*1.2),0,2); addCoin(LANES[L],8.6,z); } }
 }
+function updateBank(){ $('bankStart').textContent=save.eggs; $('bankShop').textContent=save.eggs; }
+let previewing=null;
+function renderShop(){
+  const list=$('skinList'); list.innerHTML='';
+  for(const id in SKINS){ const k=SKINS[id], own=save.owned.includes(id), on=save.skin===id;
+    const li=document.createElement('li');
+    const pick=document.createElement('button'); pick.className='skin-pick'; pick.setAttribute('aria-pressed',previewing===id?'true':'false');
+    pick.innerHTML=`<span class="sw" style="background:${k.top?`linear-gradient(${k.top},${k.body} 70%)`:k.body};--belly:${k.belly}"></span><span><b>${k.name}</b><small>${k.desc}</small></span>`;
+    pick.addEventListener('click',()=>{ previewing=id; setPlayerSkin(id); renderShop(); });
+    const act=document.createElement('button'); act.className='skin-act'+(on?' on':own?' own':'');
+    if(on){ act.textContent='使用中'; act.disabled=true; act.style.opacity=1; }
+    else if(own){ act.textContent='使用'; act.addEventListener('click',()=>{ save.skin=id; previewing=id; persist(); setPlayerSkin(id); renderShop(); }); }
+    else { act.innerHTML=`<i class="egg" aria-hidden="true"></i>${k.price}`; act.setAttribute('aria-label',`用 ${k.price} 顆奶蛋兌換${k.name}`);
+      if(save.eggs<k.price){ act.disabled=true; act.title=`還差 ${k.price-save.eggs} 顆`; }
+      act.addEventListener('click',()=>{ if(save.eggs<k.price) return; save.eggs-=k.price; save.owned.push(id); save.skin=id; previewing=id; persist(); updateBank(); setPlayerSkin(id);
+        initAudio(); sndItem(); burst(S.x,1.6,S.z,C_SPARK,40,0.8); renderShop(); }); }
+    li.append(pick,act); list.appendChild(li); }
+  $('saveCode').value=exportCode(); updateBank();
+}
+function openShop(){ previewing=save.skin; ui.start.hidden=true; ui.shop.hidden=false; $('saveMsg').textContent=''; renderShop(); $('shopBack').focus(); }
+function closeShop(){ ui.shop.hidden=true; ui.start.hidden=false; previewing=null; setPlayerSkin(save.skin); $('shopBtn').focus(); }
+function goTitle(){ resetGame(); S.state='title'; ui.over.hidden=true; ui.hud.hidden=true; ui.tod.hidden=true; ui.start.hidden=false; chaser.position.set(1.6,0,3); S.chaseDist=3.2; $('startBtn').focus(); }
 function setPaused(p){ if(S.state!=='play') return; S.paused=p; ui.pause.hidden=!p; if(actx){ p?actx.suspend():actx.resume(); } if(!p) canvas.focus(); }
 
 /* =========================================================
@@ -951,6 +1084,8 @@ function act(a){
 }
 window.addEventListener('keydown',e=>{
   const k=e.key;
+  if(e.target&&e.target.tagName==='INPUT') return;
+  if(!ui.shop.hidden){ if(k==='Escape') closeShop(); return; }
   if((S.state==='title'||S.state==='over')&&(k==='Enter'||k===' ')){ e.preventDefault(); startGame(); return; }
   if(k==='Escape'||k==='p'||k==='P'){ setPaused(!S.paused); return; }
   if(e.repeat) return;
@@ -962,7 +1097,14 @@ canvas.addEventListener('pointerdown',e=>{ touch={x:e.clientX,y:e.clientY,done:f
 canvas.addEventListener('pointermove',e=>{ if(!touch||touch.done) return; const dx=e.clientX-touch.x,dy=e.clientY-touch.y;
   if(Math.max(Math.abs(dx),Math.abs(dy))>26){ touch.done=true; if(Math.abs(dx)>Math.abs(dy)) act(dx<0?'left':'right'); else act(dy<0?'up':'down'); } });
 canvas.addEventListener('pointerup',()=>{ touch=null; });
-$('startBtn').addEventListener('click',startGame); $('againBtn').addEventListener('click',startGame);
+$('startBtn').addEventListener('click',startGame);
+$('shopBtn').addEventListener('click',openShop); $('shopBack').addEventListener('click',closeShop); $('menuBtn').addEventListener('click',goTitle);
+$('copyCode').addEventListener('click',()=>{ const inp=$('saveCode'); inp.value=exportCode();
+  const ok=()=>{ $('saveMsg').textContent='已複製，到另一台裝置貼上讀取就好。'; };
+  try{ navigator.clipboard.writeText(inp.value).then(ok,()=>{ inp.select(); $('saveMsg').textContent='請手動複製上面的存檔碼。'; }); }catch(e){ inp.select(); $('saveMsg').textContent='請手動複製上面的存檔碼。'; } });
+$('loadBtn').addEventListener('click',()=>{ if(importCode($('loadCode').value)){ $('saveMsg').textContent='讀取成功。'; $('loadCode').value=''; previewing=save.skin; setPlayerSkin(save.skin); $('bestStart').textContent=best; renderShop(); }
+  else $('saveMsg').textContent='存檔碼不正確，請確認有完整複製。'; });
+updateBank(); $('againBtn').addEventListener('click',startGame);
 $('pauseBtn').addEventListener('click',()=>setPaused(true)); $('resumeBtn').addEventListener('click',()=>setPaused(false));
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) setPaused(true); });
 function syncToggles(){ for(const [id,k] of [['tgMusic','music'],['tgSfx','sfx'],['tgHQ','hq'],['tgMusic2','music'],['tgSfx2','sfx'],['tgHQ2','hq']]) $(id).setAttribute('aria-pressed',cfg[k]?'true':'false'); }
@@ -1031,6 +1173,7 @@ function update(dt,now){
     items=items.filter(i=>{ if(i.z>S.z+12||(i.taken&&i.t>0.3)){ scene.remove(i.mesh); return false; } return true; });
     // 輪胎塵土
     if(S.grounded&&Math.random()<dt*30) dust.emit(S.x+rnd(-0.1,0.1),S.y+0.08,S.z+0.9,rnd(-0.6,0.6),rnd(0.3,1.0),rnd(1,3),rnd(0.5,0.9),rnd(0.35,0.7),C_DUST,0.35,0.5);
+    if(u.skin==='gold'&&Math.random()<dt*40) sparks.emit(S.x+rnd(-0.5,0.5),S.y+rnd(0.5,2.4),S.z+rnd(0.3,1.2),rnd(-0.3,0.3),rnd(0,0.6),rnd(1,3),rnd(0.5,0.9),rnd(0.15,0.3),C_SPARK,0.9,-0.5);
     if(P.rocket>0) for(let i=0;i<3;i++) for(const s of [1,-1]) sparks.emit(S.x+s*0.42,S.y+0.9,S.z+0.9,rnd(-0.5,0.5),rnd(-3,-1),rnd(3,6),rnd(0.2,0.45),rnd(0.3,0.6),C_FLAME,0.9,0);
     ui.score.textContent=Math.floor(S.score); ui.coins.textContent=S.coins; ui.mult.textContent='x'+mult;
     ui.warn.hidden=!(S.chaseTimer>0&&S.t>3); updatePowersUI();
@@ -1054,7 +1197,8 @@ function update(dt,now){
   for(const w of u.wheels){ w.rotation.x-=mv*dt/0.47; w.userData.glow.visible=P.spring>0; }
   u.crankA+=mv*dt/0.47*0.55*(P.rocket>0?0.3:1);
   u.rockets.visible=P.rocket>0; u.flames.forEach(f=>f.scale.set(0.12,0.5+Math.random()*0.4,0.12));
-  u.rider.userData.helmet.visible=P.shield>0; u.rider.userData.magnet.visible=P.magnet>0;
+  u.rider.userData.helmet.visible=P.shield>0; u.rider.userData.hat.visible=!(P.shield>0);
+  if(u.rider.userData.towel) u.rider.userData.towel.rotation.x=0.25+(S.state==='play'?0.5+Math.sin(now*14)*0.15:0); u.rider.userData.magnet.visible=P.magnet>0;
   if(P.magnet>0) u.rider.userData.magnet.rotation.y=now*3;
   if(S.state==='play'){
     const wob=S.wobble>0?Math.sin(S.wobble*30)*0.18*S.wobble:0;
